@@ -6,7 +6,10 @@ import os
 from google.appengine.ext.webapp import template
 #imports for the app itself
 import urllib2
-import json
+try:
+    import simplejson as json
+except ImportError:
+    import json
 from BeautifulSoup import BeautifulSoup
 
 class DRAEResults(webapp.RequestHandler):
@@ -20,7 +23,7 @@ class DRAEResults(webapp.RequestHandler):
     
     #for resu in soup.body.findAll("span",["eAcep", ""]):
     for resu in soup.body.findAll("span","eAcep"):
-      resultList.append(resu.contents[0])
+      resultList.append(resu.getText().encode("utf-8"))
       #resu.renderContents()
     return resultList
 
