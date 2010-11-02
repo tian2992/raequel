@@ -4,15 +4,15 @@
 <head>
   <title>Raequel - una API para el DRAE</title>
   <meta name="description" content="Raequel es una API no oficial para el diccionario de la Real Academia Española" />
-  <style>
+  <style type="text/css">
     #container {
       margin-left:auto;
       margin-right:auto;
-      width:460px;
+      width:50%;
       border: 1px solid #ddd;
       padding:20px;
     }
-    h1, h2, h3 { font-family: "Gill Sans MT Pro", "Trebuchet", sans-serif; font-style:normal; }  
+    h1, h2, h3, h4 { font-family: "Gill Sans MT Pro", "Gill Sans" "Trebuchet", sans-serif; font-style:normal; }  
     body {font-size:100%; font-family: "Garamond Premier Pro", "Georgia", serif;}
     .logo {width:128px; height:128px; top:0; float:right;}
     .red {color:#E40000;}
@@ -27,14 +27,28 @@
     
     <h2>¿Como se usa?</h2>
     <p>
-      Raequel implementa una <abbr lang="en" xml:lang="en" title="application programming interface">API</abbr> extremadamente sencilla, por el momento, solo hay un <span lang="en" xml:lang="en">URL endpoint</span> <code> /json </code>, Espero implementar salida XML pronto.
+      Raequel implementa una <abbr lang="en" xml:lang="en" title="application programming interface">API</abbr> extremadamente sencilla, por el momento, hay dos <span lang="en" xml:lang="en">URL endpoints</span> <code>/json y /xml</code>.
     </p>
     <h3>Ejemplo</h3>
+    <h4>Usando GET</h4>
     <code>
       $ curl "http://rae-quel.appspot.com/json?query=idioma" <br />
       [" Lengua de un pueblo o naci\u00f3n, o com\u00fan a varios.", " Modo particular de hablar de algunos o en algunas ocasiones. "]
     </code>
     <p>Tambien puedes agregar el parametro <code>type=3</code> para busquedas mas exhaustivas.</p>
+    <h4>REST</h4>
+    <div>
+      <p>Puedes usar el endpoint <code>/w/xml/algo</code> o <code>/w/json/algo</code></p>
+      <code>
+        $ curl "http://rae-quel.appspot.com/w/xml/papa" <br />
+        &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+        &lt;definitions&gt;<br />
+          &lt;definition&gt;Melón malo como pepino.&lt;/definition&gt;<br />
+          &lt;definition&gt;Petimetre, lechuguino, pisaverde.&lt;/definition&gt;<br />
+        &lt;/definitions&gt;
+      </code>
+      <br />
+    </div>
     <div class="footer">
       &copy; Copyright 2010, <a href="http://sebastianoliva.com">Sebastian Oliva</a>, Raequel esta disponible bajo la licencia <a href="http://www.gnu.org/licenses/agpl.html">GNU AGPL 3.0</a>. El codigo esta situado en <a href="http://github.com/tian2992/raequel">github.com/tian2992/raequel</a><br />
       <img src="http://code.google.com/appengine/images/appengine-noborder-120x30.gif" 

@@ -26,15 +26,19 @@ class DRAEResults(webapp.RequestHandler):
     requestType = 0
     if (self.request.get('type') != None):
       requestType = self.request.get('type')
-      
-    page = urllib2.urlopen("http://buscon.rae.es/draeI/SrvltGUIBusUsual?LEMA="+query+"&origen=RAE&TIPO_BUS="+requestType)
-    soup = BeautifulSoup(page)
-    resultList = []
     
-    #for resu in soup.body.findAll("span",["eAcep", ""]):
-    for resu in soup.body.findAll("span","eAcep"):
-      resultList.append(resu.getText().encode("utf-8"))
-      #resu.renderContents()
+    resultList = []
+    try:
+      page = urllib2.urlopen("http://buscon.rae.es/draeI/SrvltGUIBusUsual?LEMA="+query+"&origen=RAE&TIPO_BUS="+requestType)
+      soup = BeautifulSoup(page)
+    
+      #for resu in soup.body.findAll("span",["eAcep", ""]):
+      for resu in soup.body.findAll("span","eAcep"):
+        resultList.append(resu.getText().encode("utf-8"))
+        #resu.renderContents()
+    except:
+      resultList = []
+      
     return resultList
 
 class JSONResults(DRAEResults):
