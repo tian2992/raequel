@@ -11,6 +11,13 @@ try:
 except ImportError:
     import json
 from BeautifulSoup import BeautifulSoup
+#database imports
+from google.appengine.ext import db
+
+class DictResultSet(db.Expando):
+  word = db.StringProperty()
+  definitions = db.StringListProperty()
+  
 
 class DRAEResults(webapp.RequestHandler):
   def fetchResults(self):
