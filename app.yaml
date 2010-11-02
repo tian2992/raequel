@@ -1,0 +1,11 @@
+application: rae-quel
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /favicon.ico
+  static_files: favicon.ico
+  upload: favicon.ico
+- url: /.*
+  script: scrappy.py
