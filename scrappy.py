@@ -11,13 +11,23 @@ try:
 except ImportError:
     import json
 from BeautifulSoup import BeautifulSoup
+import re
 
 class DRAEResults(webapp.RequestHandler):
   def fetchResults(self):
+    query = ""
+    #>print self.request.path
+    #/json
+    fetchString = re.search("/w/(json|xml)/(.*)",self.request.path)
+    if (fetchString != None):
+      query = fetchString.group(2) #group(1) is either XML or JSON
+    else:
+      query = self.request.get('query')
     requestType = 0
     if (self.request.get('type') != None):
       requestType = self.request.get('type')
-    page = urllib2.urlopen("http://buscon.rae.es/draeI/SrvltGUIBusUsual?LEMA="+self.request.get('query')+"&origen=RAE&TIPO_BUS="+requestType)
+      
+    page = urllib2.urlopen("http://buscon.rae.es/draeI/SrvltGUIBusUsual?LEMA="+query+"&origen=RAE&TIPO_BUS="+requestType)
     soup = BeautifulSoup(page)
     resultList = []
     
@@ -35,6 +45,26 @@ class JSONResults(DRAEResults):
     self.response.headers['Content-Type'] = 'application/json'
     self.response.out.write(jsonResults)
 
+class XMLResults(DRAEResults):
+  def get(self):
+    resultList = self.fetchResults()
+    
+    #<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    #<definitions>
+    #  <definition>asdf</definition>
+    #  <definition>asdf</definition>
+    # </definition>
+    
+    self.response.headers['Content-Type'] = 'text/xml'
+    
+    self.response.out.write('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n')
+    self.response.out.write('<definitions>\n')
+    for define in resultList:
+      self.response.out.write('  <definition>'+define+'</definition>\n')
+      
+    self.response.out.write('</definitions>\n')
+    
+
 class MainPage(webapp.RequestHandler):
     def get(self):
       self.response.headers['Content-Type'] = 'text/html; charset=utf-8'
@@ -44,7 +74,10 @@ class MainPage(webapp.RequestHandler):
 
 application = webapp.WSGIApplication(
                                      [('/', MainPage),
-                                     ('/json', JSONResults)],
+                                     ('/json', JSONResults),
+                                     ('/xml' , XMLResults ),
+                                     ('/w/json/.*',JSONResults),
+                                     ('/w/xml/.*',XMLResults)],
                                      debug=True)
 
 def main():
