@@ -2,8 +2,8 @@
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 #template support
-import os
 from google.appengine.ext.webapp import template
+from google.appengine.api import memcache
 #imports for the app itself
 import urllib2
 try:
@@ -13,16 +13,20 @@ except ImportError:
 from BeautifulSoup import BeautifulSoup
 import re
 
+
 class DRAEResults(webapp.RequestHandler):
-  def fetchResults(self):
+  def fetch_query(self):
     query = ""
-    #>print self.request.path
-    #/json
     fetchString = re.search("/w/(json|xml)/(.*)",self.request.path)
     if (fetchString != None):
       query = fetchString.group(2) #group(1) is either XML or JSON
     else:
       query = self.request.get('query')
+
+    return query
+
+  def fetchResults(self):
+    query = self.fetch_query()
     requestType = 0
     if (self.request.get('type') != None):
       requestType = self.request.get('type')
@@ -43,13 +47,18 @@ class DRAEResults(webapp.RequestHandler):
 
 class JSONResults(DRAEResults):
   def get(self):
-    resultList = self.fetchResults()
-    jsonResults = json.dumps(resultList) #results in JSON
+    query = self.fetch_query()
+    json_results = memcache.get(query)
+    if not json_results:
+        resultList = self.fetchResults()
+        if resultList:
+            memcache.add(query, json_results)
+        json_results = json.dumps(resultList) #results in JSON
 
     self.response.headers['Content-Type'] = 'application/json'
     self.response.headers['Access-Control-Allow-Origin'] = '*'
     self.response.headers['Access-Control-Allow-Methods'] = 'GET'
-    self.response.out.write(jsonResults)
+    self.response.out.write(json_results)
 
 class XMLResults(DRAEResults):
   def get(self):
