@@ -52,7 +52,7 @@ class JSONResults(DRAEResults):
     if not json_results:
         resultList = self.fetchResults()
         if resultList:
-            memcache.add(query, json_results, 300)
+            memcache.add(query, json_results)
         json_results = json.dumps(resultList) #results in JSON
 
     self.response.headers['Content-Type'] = 'application/json'
