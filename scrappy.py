@@ -33,11 +33,12 @@ class DRAEResults(webapp.RequestHandler):
 
     resultList = []
     try:
-      page = urllib2.urlopen("http://buscon.rae.es/draeI/SrvltGUIBusUsual?LEMA="+query+"&origen=RAE&TIPO_BUS="+requestType)
+      #page = urllib2.urlopen("http://buscon.rae.es/draeI/SrvltGUIBusUsual?LEMA="+query+"&origen=RAE&TIPO_BUS="+
+      page = urllib2.urlopen("http://lema.rae.es/drae/srv/search?type="+query+"&val="+query+"&val_aux=&origen=RAE")
       soup = BeautifulSoup(page)
 
       #for resu in soup.body.findAll("span",["eAcep", ""]):
-      for resu in soup.body.findAll("span","eAcep"):
+      for resu in soup.findAll("span","b"):
         resultList.append(resu.getText().encode("utf-8"))
         #resu.renderContents()
     except:
@@ -100,3 +101,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
