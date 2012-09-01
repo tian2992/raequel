@@ -1,3 +1,11 @@
+"""RAEquel: una API para el diccionario de la Real Academia de la Lengua.
+"""
+
+__author__ = "Sebastian Oliva (yo@sebastianoliva.com)"
+__version__ = "3.2"
+__copyright__ = "Copyright (c) 2010-2012 Sebastian Oliva"
+__license__ = "GNU AGPL 3.0"
+
 #basic framework imports
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
@@ -27,14 +35,11 @@ class DRAEResults(webapp.RequestHandler):
 
   def fetchResults(self):
     query = self.fetch_query()
-    requestType = 0
-    if (self.request.get('type') != None):
-      requestType = self.request.get('type')
-
+    requestType = self.request.get('type', 0)
     resultList = []
+
     try:
-      #page = urllib2.urlopen("http://buscon.rae.es/draeI/SrvltGUIBusUsual?LEMA="+query+"&origen=RAE&TIPO_BUS="+
-      page = urllib2.urlopen("http://lema.rae.es/drae/srv/search?type="+query+"&val="+query+"&val_aux=&origen=RAE")
+      page = urllib2.urlopen("http://lema.rae.es/drae/srv/search?type="+str(requestType)+"&val="+query)
       soup = BeautifulSoup(page)
 
       #for resu in soup.body.findAll("span",["eAcep", ""]):
