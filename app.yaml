@@ -1,11 +1,20 @@
 application: rae-quel
 version: 2
-runtime: python
+runtime: python27
 api_version: 1
+threadsafe: true
 
 handlers:
 - url: /favicon.ico
   static_files: favicon.ico
   upload: favicon.ico
-- url: /.*
-  script: scrappy.py
+
+- url:          /.*
+  script:       raequel.app
+
+libraries:
+- name:     lxml
+  version:  latest
+
+- name: jinja2
+  version: latest
