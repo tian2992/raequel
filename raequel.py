@@ -6,104 +6,64 @@ __version__ = "3.2"
 __copyright__ = "Copyright (c) 2010-2012 Sebastian Oliva"
 __license__ = "GNU AGPL 3.0"
 
-#basic framework imports
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp.util import run_wsgi_app
-#template support
-from google.appengine.ext.webapp import template
-from google.appengine.api import memcache
-#imports for the app itself
-import urllib2
-try:
-    import simplejson as json
-except ImportError:
-    import json
-from BeautifulSoup import BeautifulSoup
+import os
+import sys
+
+root_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(root_dir, 'libs'))
+
 import re
+import json
+
+import jinja2
+import webapp2
+from google.appengine.api import memcache
+
+from rae import Drae
+
+jinja_environment = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
 
-class DRAEResults(webapp.RequestHandler):
-  def fetch_query(self):
-    query = ""
-    fetchString = re.search("/w/(json|xml)/(.*)",self.request.path)
-    if (fetchString != None):
-      query = fetchString.group(2) #group(1) is either XML or JSON
+def get_lemas(word):
+    lemas = memcache.get(u'{0}:lemas'.format(word))
+    if lemas is not None:
+        return json.loads(lemas)
     else:
-      query = self.request.get('query')
-
-    return query
-
-  def fetchResults(self):
-    query = self.fetch_query()
-    requestType = self.request.get('type', 0)
-    resultList = []
-
-    try:
-      page = urllib2.urlopen("http://lema.rae.es/drae/srv/search?type="+str(requestType)+"&val="+query)
-      soup = BeautifulSoup(page)
-
-      #for resu in soup.body.findAll("span",["eAcep", ""]):
-      for resu in soup.findAll("span","b"):
-        resultList.append(resu.getText().encode("utf-8"))
-        #resu.renderContents()
-    except:
-      resultList = []
-
-    return resultList
-
-class JSONResults(DRAEResults):
-  def get(self):
-    query = self.fetch_query()
-    json_results = memcache.get(query)
-    if not json_results:
-        resultList = self.fetchResults()
-        if resultList:
-            memcache.add(query, json_results)
-        json_results = json.dumps(resultList) #results in JSON
-
-    self.response.headers['Content-Type'] = 'application/json'
-    self.response.headers['Access-Control-Allow-Origin'] = '*'
-    self.response.headers['Access-Control-Allow-Methods'] = 'GET'
-    self.response.out.write(json_results)
-
-class XMLResults(DRAEResults):
-  def get(self):
-    resultList = self.fetchResults()
-
-    #<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-    #<definitions>
-    #  <definition>asdf</definition>
-    #  <definition>asdf</definition>
-    # </definition>
-
-    self.response.headers['Content-Type'] = 'text/xml'
-
-    self.response.out.write('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n')
-    self.response.out.write('<definitions>\n')
-    for define in resultList:
-      self.response.out.write('  <definition>'+define+'</definition>\n')
-
-    self.response.out.write('</definitions>\n')
+        drae = Drae()
+        lemas = drae.search(word)
+        if not isinstance(lemas, dict):     # don't cache errors
+            memcache.add(u'{0}:lemas'.format(word), json.dumps(lemas))
+        return lemas
 
 
-class MainPage(webapp.RequestHandler):
+class MainPage(webapp2.RequestHandler):
     def get(self):
-      self.response.headers['Content-Type'] = 'text/html; charset=utf-8'
-      self.response.out.write(template.render("index.html",None))
-      #self.response.headers['Content-Type'] = 'text/plain'
-      #self.response.out.write('Hello, World!')
+        self.response.headers['Content-Type'] = 'text/html; charset=utf-8'
+        template = jinja_environment.get_template('index.html')
+        self.response.out.write(template.render({}))
 
-application = webapp.WSGIApplication(
-                                     [('/', MainPage),
-                                     ('/json', JSONResults),
-                                     ('/xml' , XMLResults ),
-                                     ('/w/json/.*',JSONResults),
-                                     ('/w/xml/.*',XMLResults)],
-                                     debug=True)
 
-def main():
-    run_wsgi_app(application)
+class JsonResults(webapp2.RequestHandler):
+    def get(self):
+        palabra = self.request.get('query')
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.headers['Access-Control-Allow-Origin'] = '*'
+        self.response.headers['Access-Control-Allow-Methods'] = 'GET'
+        self.response.out.write(json.dumps(get_lemas(palabra)))
 
-if __name__ == "__main__":
-    main()
 
+class XmlResults(webapp2.RequestHandler):
+    def get(self):
+        palabra = self.request.get('query')
+        self.response.headers['Content-Type'] = 'application/xml'
+        template = jinja_environment.get_template('results.xml')
+
+        self.response.out.write(template.render({'lemas': get_lemas(palabra)}))
+
+
+app = webapp2.WSGIApplication(
+                              [('/', MainPage),
+                              ('/json', JsonResults),
+                              ('/xml', XmlResults),],
+                              debug=True)
