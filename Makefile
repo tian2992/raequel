@@ -3,7 +3,7 @@ LIBS_DIR='libs/'
 
 
 install_deps:
-	pip install --ignore-installed --target=${LIBS_DIR} -r requirements.txt
+	pip install --no-dependencies --target=${LIBS_DIR} -r requirements.txt
 
 deploy: install_deps
 	appcfg.py update .
