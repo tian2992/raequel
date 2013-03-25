@@ -20,7 +20,14 @@ libraries:
   version: latest
 
 skip_files:
-- ^(.*/)?Makefile
-- ^(.*/)?.*~
+- ^(.*/)?app\.yaml
+- ^(.*/)?app\.yml
+- ^(.*/)?index\.yaml
+- ^(.*/)?index\.yml
 - ^(.*/)?#.*#
+- ^(.*/)?.*~
 - ^(.*/)?.*\.py[co]
+- ^(.*/)?.*/RCS/.*
+- ^(.*/)?\..*
+- ^(.*/)?Makefile
+- ^(.*/)?__pycache__

@@ -2,4 +2,5 @@
 .*.sw[a-z]
 
 libs/*
+third_party/*
 !.gitignore
