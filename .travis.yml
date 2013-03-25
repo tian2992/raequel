@@ -8,6 +8,6 @@ python:
 install:
   - make develop_deps
 
-scripts:
+script:
   - make test
   - flake8 . --exclude='libs,third_party' --max-complexity 6
