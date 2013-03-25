@@ -9,10 +9,9 @@ __license__ = "GNU AGPL 3.0"
 import os
 import sys
 
-root_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(root_dir, 'libs'))
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(ROOT_DIR, 'libs'))
 
-import re
 import json
 
 import jinja2
@@ -22,7 +21,7 @@ from google.appengine.api import memcache
 from rae import Drae
 
 jinja_environment = jinja2.Environment(
-    loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
+    loader=jinja2.FileSystemLoader(os.path.join(ROOT_DIR, 'templates')))
 
 
 def get_lemas(word):
@@ -45,21 +44,28 @@ class MainPage(webapp2.RequestHandler):
 
 
 class JsonResults(webapp2.RequestHandler):
-    def get(self):
+    def get(self, version='v1'):
         palabra = self.request.get('query')
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.headers['Access-Control-Allow-Methods'] = 'GET'
-        self.response.out.write(json.dumps(get_lemas(palabra)))
+        lemas = get_lemas(palabra)
+        if version == 'v1':
+            lemas = list(chain(*[lema['definiciones'] for lema in lemas]))   # nopep8
+        self.response.out.write(json.dumps(lemas))
 
 
 class XmlResults(webapp2.RequestHandler):
-    def get(self):
+    def get(self, version='v1'):
         palabra = self.request.get('query')
-        self.response.headers['Content-Type'] = 'application/xml'
-        template = jinja_environment.get_template('results.xml')
-
-        self.response.out.write(template.render({'lemas': get_lemas(palabra)}))
+        self.response.headers['Content-Type'] = 'application/xml; charset=utf-8'  # nopep8
+        lemas = get_lemas(palabra)
+        tmpl_name = 'results_v2.xml'
+        if version == 'v1':
+            tmpl_name = 'results_v1.xml'
+            lemas = list(chain(*[lema['definiciones'] for lema in get_lemas(palabra)]))   # nopep8
+        template = jinja_environment.get_template(tmpl_name)
+        self.response.out.write(template.render({'lemas': lemas}))
 
 
 app = webapp2.WSGIApplication([
