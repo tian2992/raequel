@@ -12,11 +12,23 @@ import sys
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(ROOT_DIR, 'libs'))
 
+if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine'):
+    from google.appengine.api import memcache
+    MEMCACHE = memcache
+    DEBUG = False
+else:
+    sys.path.insert(0, os.path.join(ROOT_DIR, 'third_party'))
+
+    from mockcache import Client
+    MEMCACHE = Client()
+    DEBUG = True
+
 import json
+from functools import wraps
+from itertools import chain
 
 import jinja2
 import webapp2
-from google.appengine.api import memcache
 
 from rae import Drae
 
@@ -24,16 +36,25 @@ jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(ROOT_DIR, 'templates')))
 
 
+def cache(mc):
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(word):
+            lemas = mc.get(u'{0}:lemas'.format(word))
+            if lemas:
+                return json.loads(lemas)
+            lemas = func(word)
+            mc.add(u'{0}:lemas'.format(word), json.dumps(lemas))
+            return lemas
+        return wrapper
+
+    return decorator
+
+
+@cache(MEMCACHE)
 def get_lemas(word):
-    lemas = memcache.get(u'{0}:lemas'.format(word))
-    if lemas is not None:
-        return json.loads(lemas)
-    else:
-        drae = Drae()
-        lemas = drae.search(word)
-        if not isinstance(lemas, dict):     # don't cache errors
-            memcache.add(u'{0}:lemas'.format(word), json.dumps(lemas))
-        return lemas
+    return Drae().search(word)
 
 
 class MainPage(webapp2.RequestHandler):
