@@ -6,10 +6,10 @@ test:
 	py.test test_raequel.py
 
 deps:
-	pip install --no-dependencies --target=${LIBS_DIR} rae
+	pip install --no-dependencies --target=${LIBS_DIR} --use-mirrors rae
 
 develop_deps: deps
-	pip install --target=${THIRD_PARTY} lxml mockcache pytest
+	pip install --target=${THIRD_PARTY} --use-mirrors lxml mockcache pytest
 
 deploy: deps clean
 	-rm -fr ${THIRD_PARTY}/*     # Don't push third party libs to server
