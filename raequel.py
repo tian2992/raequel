@@ -62,8 +62,10 @@ class XmlResults(webapp2.RequestHandler):
         self.response.out.write(template.render({'lemas': get_lemas(palabra)}))
 
 
-app = webapp2.WSGIApplication(
-                              [('/', MainPage),
-                              ('/json', JsonResults),
-                              ('/xml', XmlResults),],
-                              debug=True)
+app = webapp2.WSGIApplication([
+    webapp2.Route('/', handler=MainPage, name='home'),
+    webapp2.Route(r'/xml', handler=XmlResults, name='default_xml'),  # nopep8
+    webapp2.Route(r'/json', handler=JsonResults, name='default_json'),  # nopep8
+    webapp2.Route(r'/<version:v\d+>/xml', handler=XmlResults, name='xml_results'),   # nopep8
+    webapp2.Route(r'/<version:v\d+>/json', handler=JsonResults, name='json_results')],  # nopep8
+    debug=True)
