@@ -6,7 +6,7 @@ python:
   - '2.7'
 
 install:
-  - pip install --use-mirrors flake8 pytest
+  - pip install --use-mirrors flake8 pytest webapp2
   - make develop_deps
 
 script:
