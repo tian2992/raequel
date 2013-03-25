@@ -2,9 +2,9 @@
 <definitions>
   {% for lema in lemas %}
     <lema>
-    {% for definition in lema.definiciones %}
-    <definition>{{ definition }}</definition>
-    {% endfor %}
+      {% for definition in lema.definiciones %}
+        <definition>{{ definition }}</definition>
+      {% endfor %}
     </lema>
   {% endfor %}
 </definitions>
