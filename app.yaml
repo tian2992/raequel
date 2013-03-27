@@ -1,4 +1,4 @@
-application: rae-quel
+application: raequel-hrd
 version: 2
 runtime: python27
 api_version: 1

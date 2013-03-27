@@ -2,9 +2,6 @@
 LIBS_DIR='libs/'
 THIRD_PARTY='third_party/'
 
-test:
-	py.test test_raequel.py
-
 deps:
 	pip install --ignore-installed --no-dependencies --target=${LIBS_DIR} --use-mirrors rae
 
@@ -14,6 +11,9 @@ develop_deps: deps
 deploy: deps clean
 	-rm -fr ${THIRD_PARTY}/*     # Don't push third party libs to server
 	appcfg.py update .
+
+test:
+	py.test test_raequel.py
 
 clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +

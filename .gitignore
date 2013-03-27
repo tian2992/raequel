@@ -1,6 +1,7 @@
 *.py[cod]
 .*.sw[a-z]
 
+build/*
 libs/*
 third_party/*
 !.gitignore
