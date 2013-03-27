@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es" lang="es">
 <head>
   <title>Raequel - una API para el DRAE</title>
@@ -12,19 +12,21 @@
       border: 1px solid #ddd;
       padding:20px;
     }
-    h1, h2, h3, h4 { font-family: "Gill Sans MT Pro", "Gill Sans" "Trebuchet", sans-serif; font-style:normal; }  
+    h1, h2, h3, h4 { font-family: "Gill Sans MT Pro", "Gill Sans" "Trebuchet", sans-serif; font-style:normal; }
     body {font-size:100%; font-family: "Garamond Premier Pro", "Georgia", serif;}
     .logo {width:128px; height:128px; top:0; float:right;}
     .red {color:#E40000;}
     a, .blue {color:#218BD1;}
-  </style>  
+  </style>
 </head>
 <body>
   <div id="container">
     <h1 class="red">Raequel - una <abbr lang="en" xml:lang="en" title="application programming interface">API</abbr> para el <abbr title="Diccionario de la Real Academia Española">DRAE</abbr></h1>
-    
-    <p>Raequel te permite hacer busquedas automatizadas a <a href="http://buscon.rae.es/">buscon.rae.es</a> y obtener los resultados en lenguaje interpretable por máquina</p>
-    
+
+    <p><a href="http://raequel.sebastianoliva.com">Raequel</a> te permite hacer busquedas automatizadas a <a href="http://buscon.rae.es/">buscon.rae.es</a> y obtener los resultados en lenguaje interpretable por máquina.</p>
+
+    <p><strong>¿Preguntas, comentarios o alertas?</strong> Enviame un correo a yo [arroba] sebastianoliva [punto] com o un mensaje via twitter a <a href="https://twitter.com/tian2992">@tian2992</a>.</p>
+
     <h2>¿Como se usa?</h2>
     <p>
       Raequel implementa una <abbr lang="en" xml:lang="en" title="application programming interface">API</abbr> extremadamente sencilla, por el momento, hay dos <span lang="en" xml:lang="en">URL endpoints</span> <code>/json y /xml</code>.
@@ -32,7 +34,7 @@
     <h3>Ejemplo</h3>
     <h4>Usando GET</h4>
     <code>
-      $ curl "http://rae-quel.appspot.com/json?query=idioma" <br />
+      $ curl "http://raequel.sebastianoliva.com/json?query=idioma" <br />
       [" Lengua de un pueblo o naci\u00f3n, o com\u00fan a varios.", " Modo particular de hablar de algunos o en algunas ocasiones. "]
     </code>
     <p>Tambien puedes agregar el parametro <code>type=3</code> para busquedas mas exhaustivas.</p>
@@ -40,7 +42,7 @@
     <div>
       <p>Puedes usar el endpoint <code>/w/xml/algo</code> o <code>/w/json/algo</code></p>
       <code>
-        $ curl "http://rae-quel.appspot.com/w/xml/papa" <br />
+        $ curl "http://raequel.sebastianoliva.com/w/xml/papa" <br />
         &lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
         &lt;definitions&gt;<br />
           &lt;definition&gt;Melón malo como pepino.&lt;/definition&gt;<br />
@@ -51,7 +53,7 @@
     </div>
     <div class="footer">
       &copy; Copyright 2010, <a href="http://sebastianoliva.com">Sebastian Oliva</a>, Raequel esta disponible bajo la licencia <a href="http://www.gnu.org/licenses/agpl.html">GNU AGPL 3.0</a>. El codigo esta situado en <a href="http://github.com/tian2992/raequel">github.com/tian2992/raequel</a><br />
-      <img src="http://code.google.com/appengine/images/appengine-noborder-120x30.gif" 
+      <img src="http://code.google.com/appengine/images/appengine-noborder-120x30.gif"
 alt="Powered by Google App Engine" />
     </div>
   </div>
