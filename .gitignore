@@ -1,2 +1,6 @@
-*.pyc
-*.sw?
+*.py[cod]
+.*.sw[a-z]
+
+libs/*
+third_party/*
+!.gitignore

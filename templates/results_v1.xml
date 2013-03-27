@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions>
+  {% for lema in lemas %}
+    <definition>{{ lema }}</definition>
+  {% endfor %}
+</definitions>
