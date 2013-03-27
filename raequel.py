@@ -8,6 +8,7 @@ __license__ = "GNU AGPL 3.0"
 
 import os
 import sys
+import logging
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(ROOT_DIR, 'libs'))
@@ -65,8 +66,9 @@ class MainPage(webapp2.RequestHandler):
 
 
 class JsonResults(webapp2.RequestHandler):
-    def get(self, version='v1'):
-        palabra = self.request.get('query')
+    def get(self, palabra = "", version='v1'):
+        if palabra == "":
+            palabra = self.request.get('query')
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.headers['Access-Control-Allow-Methods'] = 'GET'
@@ -77,14 +79,20 @@ class JsonResults(webapp2.RequestHandler):
 
 
 class XmlResults(webapp2.RequestHandler):
-    def get(self, version='v1'):
-        palabra = self.request.get('query')
+    def get(self, palabra = "", version='v1'):
+        if palabra == "":
+            palabra = self.request.get('query')
         self.response.headers['Content-Type'] = 'application/xml; charset=utf-8'  # nopep8
         lemas = get_lemas(palabra)
         tmpl_name = 'results_v2.xml'
         if version == 'v1':
             tmpl_name = 'results_v1.xml'
-            lemas = list(chain(*[lema['definiciones'] for lema in get_lemas(palabra)]))   # nopep8
+            try:
+                lemas = list(chain(*[lema['definiciones'] for lema in get_lemas(palabra)]))   # nopep8
+                logging.debug("""Fetching results for: '{0}'""".format(palabra))
+            except TypeError:
+                logging.debug("""Word: '{0}' not found""".format(palabra))
+                lemas = ""
         template = jinja_environment.get_template(tmpl_name)
         self.response.out.write(template.render({'lemas': lemas}))
 
@@ -93,6 +101,8 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/', handler=MainPage, name='home'),
     webapp2.Route(r'/xml', handler=XmlResults, name='default_xml'),  # nopep8
     webapp2.Route(r'/json', handler=JsonResults, name='default_json'),  # nopep8
+    webapp2.Route(r'/w/xml/<palabra>', handler=XmlResults, name='rest_xml'), # nopep8
+    webapp2.Route(r'/w/json/<palabra>', handler=JsonResults, name='rest_json'), # nopep8
     webapp2.Route(r'/<version:v\d+>/xml', handler=XmlResults, name='xml_results'),   # nopep8
     webapp2.Route(r'/<version:v\d+>/json', handler=JsonResults, name='json_results')],  # nopep8
     debug=True)
