@@ -1,8 +1,7 @@
-"""RAEquel: una API para el diccionario de la Real Academia de la Lengua.
-"""
+"""RAEquel: una API para el diccionario de la Real Academia de la Lengua."""
 
 __author__ = "Sebastian Oliva (yo@sebastianoliva.com)"
-__version__ = "3.2"
+__version__ = "3.5"
 __copyright__ = "Copyright (c) 2010-2012 Sebastian Oliva"
 __license__ = "GNU AGPL 3.0"
 
@@ -74,7 +73,12 @@ class JsonResults(webapp2.RequestHandler):
         self.response.headers['Access-Control-Allow-Methods'] = 'GET'
         lemas = get_lemas(palabra)
         if version == 'v1':
-            lemas = list(chain(*[lema['definiciones'] for lema in lemas]))   # nopep8
+            try:
+                lemas = list(chain(*[lema['definiciones'] for lema in lemas]))   # nopep8
+                logging.info("""Fetching results for: '{0}' in JSON Format.""".format(palabra))
+            except TypeError:
+                lemas = ""
+                logging.debug("""Word: '{0}' not found""".format(palabra))
         self.response.out.write(json.dumps(lemas))
 
 
@@ -89,7 +93,7 @@ class XmlResults(webapp2.RequestHandler):
             tmpl_name = 'results_v1.xml'
             try:
                 lemas = list(chain(*[lema['definiciones'] for lema in get_lemas(palabra)]))   # nopep8
-                logging.debug("""Fetching results for: '{0}'""".format(palabra))
+                logging.info("""Fetching results for: '{0}' in XML Format.""".format(palabra))
             except TypeError:
                 logging.debug("""Word: '{0}' not found""".format(palabra))
                 lemas = ""
