@@ -1,5 +1,10 @@
 Raequel
 =========================================================
+
+# RAEQUEL is currently broken, RAE actively fights against scraping, and I have not done significant effort on cracking it. 
+# contact me at raequel@sebastianoliva.com if you want to help/code/talk.
+
+
 An API for the Real Academia Española Dictionary
 ------------------------------------------------
 
