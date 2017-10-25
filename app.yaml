@@ -1,5 +1,3 @@
-application: raequel-hrd
-version: 2
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -14,6 +12,9 @@ handlers:
 
 libraries:
 - name: lxml
+  version: latest
+
+- name: numpy
   version: latest
 
 - name: jinja2

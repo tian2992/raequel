@@ -30,7 +30,9 @@ from itertools import chain
 import jinja2
 import webapp2
 
-from rae import Drae
+from third_party.pyrae import pyrae
+
+
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(ROOT_DIR, 'templates')))
@@ -54,7 +56,7 @@ def cache(mc):
 
 @cache(MEMCACHE)
 def get_lemas(word):
-    return Drae().search(word)
+    return pyrae.DLE.search_word(word)
 
 
 class MainPage(webapp2.RequestHandler):
