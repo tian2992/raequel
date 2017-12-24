@@ -20,6 +20,7 @@ else:
     sys.path.insert(0, os.path.join(ROOT_DIR, 'third_party'))
 
     try:
+        import memcache
         MEMCACHE = memcache.Client(['127.0.0.1:11211'], debug=0)
     except:
         from mockcache import Client

@@ -2,3 +2,4 @@ jinja2
 lxml
 bs4
 requests
+python-memcached
