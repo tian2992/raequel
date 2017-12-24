@@ -38,8 +38,8 @@ class _Shared(object):
 
             for k in chlg + slt:
                 index = ((crc ^ ord(k)) & 0x000000FF) * 9
-                x = int(table[index:index+8], 16)
-                crc = np.right_shift(np.int32(crc),8) ^ np.int32(x)
+                x = np.int32(int(table[index:index+8], 16))
+                crc = np.right_shift(np.int32(crc),8) ^ x
 
             crc = abs(crc ^ -1)
 
