@@ -19,9 +19,12 @@ if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine'):
 else:
     sys.path.insert(0, os.path.join(ROOT_DIR, 'third_party'))
 
-    from mockcache import Client
-    MEMCACHE = Client()
-    DEBUG = True
+    try:
+        MEMCACHE = memcache.Client(['127.0.0.1:11211'], debug=0)
+    except:
+        from mockcache import Client
+        MEMCACHE = Client()
+    #DEBUG = True
 
 import json
 from functools import wraps
