@@ -3,3 +3,5 @@ lxml
 bs4
 requests
 python-memcached
+pyrae
+webapp2
